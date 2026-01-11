@@ -102,7 +102,7 @@ spacegroup = cif_parser.spacegroup.short_name
 model_pdf = PDFGenerator("G1")
 model_pdf.setStructure(tetragonal_structure)
 
-# When obtaining your PDF experimentally, there are 
+# When obtaining your PDF experimentally, there are
 # two parameter that are determined from your experimental setup
 # These are Qmin and Qmax.
 
@@ -174,7 +174,11 @@ rw = results.rw
 robs = recipe.crystal_fit.profile.x
 gobs = recipe.crystal_fit.profile.y
 gcalc = recipe.crystal_fit.profile.ycalc
-plt.plot(robs, gobs, "o", )
+plt.plot(
+    robs,
+    gobs,
+    "o",
+)
 plt.plot(robs, gcalc, "-", label=f"Rw={rw:.4f}")
 # plot the difference below the fit
 diff = gobs - gcalc
@@ -189,6 +193,7 @@ plt.show()
 
 # -------------------------------------------------------
 # Just like we did with the line fit, lets wrap this all in a function
+
 
 def make_recipe(gr_path, cif_path, rmin, rmax):
     profile = Profile()
@@ -230,12 +235,21 @@ def make_recipe(gr_path, cif_path, rmin, rmax):
 
     return recipe
 
+
 def refine_recipe(recipe):
     recipe.fix("all")
-    tags = ["lattice_params", "scale", "adps", "atomic_positions", "delta2", "all"]
+    tags = [
+        "lattice_params",
+        "scale",
+        "adps",
+        "atomic_positions",
+        "delta2",
+        "all",
+    ]
     for tag in tags:
         recipe.free(tag)
         optimize_recipe(recipe)
+
 
 def plot_recipe_and_print_results(recipe, figsize=(8, 6)):
     results = FitResults(recipe)
@@ -259,12 +273,15 @@ def plot_recipe_and_print_results(recipe, figsize=(8, 6)):
         plt.legend()
         plt.show()
 
+
 # Now we can use these functions to do the fit again
+
 
 def main():
     recipe = make_recipe(gr_path, cif_path, 0, 30)
     refine_recipe(recipe)
     plot_recipe_and_print_results(recipe)
+
 
 if __name__ == "__main__":
     main()
