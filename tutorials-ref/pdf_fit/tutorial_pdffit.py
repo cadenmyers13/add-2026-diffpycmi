@@ -1,9 +1,8 @@
-"""
-Now that we've gotten familiar with diffpy.cmi, 
-lets start fitting PDFs. We will start with the PDF
-of SrFe2As2.
+"""Now that we've gotten familiar with diffpy.cmi, lets start fitting
+PDFs. We will start with the PDF of SrFe2As2.
 
-To obtain the data for this example, run `cmi copy ch07StructuralPhaseTransitions`
+To obtain the data for this example, run `cmi copy
+ch07StructuralPhaseTransitions`
 """
 
 # -------------------------------------------------------
@@ -15,9 +14,15 @@ To obtain the data for this example, run `cmi copy ch07StructuralPhaseTransition
 
 import numpy as np
 import matplotlib.pyplot as plt
-from diffpy.srfit.fitbase import Profile, FitContribution, FitRecipe, FitResults
+from diffpy.srfit.fitbase import (
+    Profile,
+    FitContribution,
+    FitRecipe,
+    FitResults,
+)
 from diffpy.cmi.fit_tools import optimize_recipe
 from bg_mpl_stylesheets.styles import all_styles
+
 plt.style.use(all_styles["bg-style"])
 
 from pathlib import Path
@@ -27,6 +32,7 @@ from diffpy.srfit.pdf import PDFGenerator, PDFParser
 from diffpy.srfit.structure import constrainAsSpaceGroup
 from diffpy.structure.parsers import getParser
 from diffpy.utils.parsers.loaddata import loadData
+
 # -------------------------------------------------------
 # First thing is to load in and plot the PDF as a sanity check.
 # We can get the path to the data using pathlib.Path
@@ -34,7 +40,7 @@ gr_path = str(Path(__file__).parent / "data" / "SrFe2As2_150K.gr")
 
 # -------------------------------------------------------
 # Like we did with the cubic fit example, we will first instatiate
-# a Profile object. Then, we parse and load in the PDF 
+# a Profile object. Then, we parse and load in the PDF
 # and link it to the Profile object.
 
 profile = Profile()
@@ -49,7 +55,7 @@ profile.loadParsedData(pdf_parser)
 g = profile.yobs
 r = profile.xobs
 
-plt.plot(r, g, 'o')
+plt.plot(r, g, "o")
 plt.show()
 
 # -------------------------------------------------------
@@ -57,9 +63,9 @@ plt.show()
 # We can limit the range of the data we want to fit by setting
 # the calculation range on the profile object.
 
-rmin = .5
+rmin = 0.5
 rmax = 50
-rstep = .05
+rstep = 0.05
 profile.setCalculationRange(xmin=rmin, xmax=rmax, dx=rstep)
 
 # -------------------------------------------------------

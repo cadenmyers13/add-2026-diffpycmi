@@ -1,35 +1,41 @@
-"""
-To teach you the basics of diffpy.cmi, we are going to
-fit the data that you saw during Simon's presentation.
-"""
+"""To teach you the basics of diffpy.cmi, we are going to fit the data
+that you saw during Simon's presentation."""
 
 # 1. First we will import everything we need to do the fit.
 #    To ensure we have everything we need, we will install the
 #    "plotting" pack of diffpy.cmi.
 import numpy as np
 import matplotlib.pyplot as plt
-from diffpy.srfit.fitbase import Profile, FitContribution, FitRecipe, FitResults
+from diffpy.srfit.fitbase import (
+    Profile,
+    FitContribution,
+    FitRecipe,
+    FitResults,
+)
 from bg_mpl_stylesheets.styles import all_styles
 from pathlib import Path
+
 plt.style.use(all_styles["bg-style"])
+
 
 # 2. Next we will create some synthetic data to fit.
 #    We will do this by creating a cubic function and adding
 #    some noise to it.
-def cubic_function(x, a=-.0015, b=.04, c=.14, d=.5):
-    y = a*x**3 + b*x**2 + c*x + d
+def cubic_function(x, a=-0.0015, b=0.04, c=0.14, d=0.5):
+    y = a * x**3 + b * x**2 + c * x + d
     return y
+
 
 savedir = Path(__file__).parent
 xmin = 0
 xmax = 21.5
 x = np.linspace(xmin, xmax, 100)
 yobs = cubic_function(x)
-noise = np.random.normal(0, 1, size=yobs.shape) * .8
+noise = np.random.normal(0, 1, size=yobs.shape) * 0.8
 yobs += noise
 
 
-figsize=(8,6)
+figsize = (8, 6)
 plt.figure(figsize=figsize)
 plt.legend()
 plt.tick_params(labelbottom=False, labelleft=False)
@@ -37,16 +43,17 @@ plt.savefig(savedir / "scatterplot-blank.pdf", dpi=300)
 plt.show()
 
 plt.figure(figsize=figsize)
-plt.plot(x, yobs, 'o')
+plt.plot(x, yobs, "o")
 plt.savefig(savedir / "scatterplot-no-labels.pdf", dpi=300)
 plt.show()
 
 plt.figure(figsize=figsize)
-plt.plot(x, yobs, 'o')
+plt.plot(x, yobs, "o")
 plt.xlabel("X")
 plt.ylabel("Y")
 plt.savefig(savedir / "scatterplot-with-labels.pdf", dpi=300)
 plt.show()
+
 
 def plot_recipe(recipe):
     results = FitResults(recipe)
@@ -57,11 +64,12 @@ def plot_recipe(recipe):
         yobs = profile.yobs
         ycalc = profile.ycalc
         plt.figure(figsize=figsize)
-        plt.plot(x, yobs, 'o')
+        plt.plot(x, yobs, "o")
         plt.plot(x, ycalc, label=f"Rw={rw:.4f}")
         plt.xlabel("X")
         plt.ylabel("Y")
         plt.legend()
+
 
 def make_recipe_linear(x, yobs):
     profile = Profile()
@@ -78,6 +86,7 @@ def make_recipe_linear(x, yobs):
 
     return recipe
 
+
 def make_recipe_parabolic(x, yobs):
     profile = Profile()
     profile.setObservedProfile(x, yobs)
@@ -93,6 +102,7 @@ def make_recipe_parabolic(x, yobs):
     recipe.addVar(recipe.parabolic_fit.c, 0.0)
 
     return recipe
+
 
 def make_recipe_cubic(x, yobs):
     profile = Profile()
@@ -111,10 +121,13 @@ def make_recipe_cubic(x, yobs):
 
     return recipe
 
+
 def refine_and_plot(recipe):
     from diffpy.cmi.fit_tools import optimize_recipe
+
     optimize_recipe(recipe)
     plot_recipe(recipe)
+
 
 if __name__ == "__main__":
     linear_recipe = make_recipe_linear(x, yobs)

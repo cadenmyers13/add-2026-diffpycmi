@@ -1,30 +1,37 @@
-"""
-To teach you the basics of diffpy.cmi, we are going to
-fit the data that you saw during Simon's presentation.
-"""
+"""To teach you the basics of diffpy.cmi, we are going to fit the data
+that you saw during Simon's presentation."""
+
 # ------------------------------------------------------
 # 1. First we will import everything we need to do the fit.
 #    To ensure we have everything we need, we will install the
 #    "plotting" pack of diffpy.cmi by running `cmi install plotting`.
 import numpy as np
 import matplotlib.pyplot as plt
-from diffpy.srfit.fitbase import Profile, FitContribution, FitRecipe, FitResults
+from diffpy.srfit.fitbase import (
+    Profile,
+    FitContribution,
+    FitRecipe,
+    FitResults,
+)
 from scipy.optimize import leastsq
 from bg_mpl_stylesheets.styles import all_styles
+
 plt.style.use(all_styles["bg-style"])
- 
+
+
 # ------------------------------------------------------
 # 2. Next we will create some synthetic data to fit.
 #    We will do this by creating a cubic function and adding
 #    some noise to it.
 def generate_synthetic_data(x, a, b, c, d):
-    y = a*x**3 + b*x**2 + c*x + d
-    noise = np.random.normal(0,1, size=y.shape) * .8
+    y = a * x**3 + b * x**2 + c * x + d
+    noise = np.random.normal(0, 1, size=y.shape) * 0.8
     y_observed = y + noise
     return y_observed
 
+
 xobs = np.linspace(0, 21.5, 100)
-yobs = generate_synthetic_data(xobs, -.0015, .04, .14, .5)
+yobs = generate_synthetic_data(xobs, -0.0015, 0.04, 0.14, 0.5)
 
 # ------------------------------------------------------
 # lets plot the data to see what this looks like
@@ -39,7 +46,7 @@ plt.show()
 #    Lets ignore our bias and use our scientific reason to find the function
 #    that best fits the model.
 
-# First, lets try to fit the data with a linear function. 
+# First, lets try to fit the data with a linear function.
 # This is where we will first use objects from the diffpy.cmi world
 
 # Instatiate a Profile object and set the observed data.
@@ -52,7 +59,7 @@ x_from_profile = profile.xobs
 y_from_profile = profile.yobs
 
 # lets plot them to see if we get what we expect
-plt.plot(x_from_profile, y_from_profile, 'o')
+plt.plot(x_from_profile, y_from_profile, "o")
 plt.title("Data from Profile object")
 plt.show()
 
@@ -80,7 +87,7 @@ b_from_contrib = contribution.b.value
 
 print(f"m_from_contrib={m_from_contrib}")
 print(f"b_from_contrib={b_from_contrib}")
-plt.plot(x_from_contrib, y_from_contrib, 'o')
+plt.plot(x_from_contrib, y_from_contrib, "o")
 plt.title("Data from FitContribution object")
 plt.show()
 # ------------------------------------------------------
@@ -101,7 +108,7 @@ values_from_recipe = recipe.values
 print(f"values_from_recipe={values_from_recipe}")
 print(f"m_from_recipe={m_from_recipe}")
 print(f"b_from_recipe={b_from_recipe}")
-plt.plot(x_from_recipe, y_from_recipe, 'o')
+plt.plot(x_from_recipe, y_from_recipe, "o")
 plt.title("Data from FitRecipe object")
 plt.show()
 
@@ -133,9 +140,9 @@ xobs = recipe.linear_fit.profile.xobs
 ycalc = recipe.linear_fit.profile.ycalc
 yobs = recipe.linear_fit.profile.yobs
 
-plt.plot(xobs, yobs, 'o', label='Observed Data')
-plt.plot(xobs, ycalc, '-', label='Fitted Line')
-plt.title(f'Fitted Line: rw={rw:.4f}')
+plt.plot(xobs, yobs, "o", label="Observed Data")
+plt.plot(xobs, ycalc, "-", label="Fitted Line")
+plt.title(f"Fitted Line: rw={rw:.4f}")
 plt.legend()
 plt.show()
 # ------------------------------------------------------
@@ -144,8 +151,9 @@ plt.show()
 #     you want to make it do one thing only. So we will
 #     create one function to make the recipe and one to plot
 #     the results. diffpy.cmi.fit_tools has a function to
-#     optimize the recipe, so we will use that to optimize 
+#     optimize the recipe, so we will use that to optimize
 #    the recipe
+
 
 #     First, let's create the function to make
 #     the linear recipe.
@@ -164,6 +172,7 @@ def make_linear_recipe(xobs, yobs):
 
     return recipe
 
+
 # ------------------------------------------------------
 # 11. The function to optimize the recipe is already
 #     available in diffpy.cmi.fit_tools, so we will use that.
@@ -172,7 +181,8 @@ from diffpy.cmi.fit_tools import optimize_recipe
 # ------------------------------------------------------
 # 12. Now, let's create the function to plot the results.
 
-def plot_recipe_and_print_results(recipe, figsize=(8,6)):
+
+def plot_recipe_and_print_results(recipe, figsize=(8, 6)):
     results = FitResults(recipe)
     print(results)
     rw = results.rw
@@ -182,26 +192,29 @@ def plot_recipe_and_print_results(recipe, figsize=(8,6)):
         yobs = profile.yobs
         ycalc = profile.ycalc
         plt.figure(figsize=figsize)
-        plt.plot(xobs, yobs, 'o')
+        plt.plot(xobs, yobs, "o")
         plt.plot(xobs, ycalc, label=f"Rw={rw:.4f}")
         plt.legend()
         plt.show()
+
+
 # ------------------------------------------------------
 # 13. Finally we can wrap everything together in a final
 #     function that takes a recipe, optimizes it, and plots
 #     and prints the results. Typically, it is common practice
 #     to refer to a function that runs all your functions as main().
 
+
 def main(recipe):
     optimize_recipe(recipe)
     plot_recipe_and_print_results(recipe)
+
 
 # ------------------------------------------------------
 # 14. Now we can create the linear recipe, optimize it,
 #     and plot the results.
 linear_recipe = make_linear_recipe(xobs, yobs)
 main(linear_recipe)
-
 
 
 # ------------------------------------------------------
@@ -224,6 +237,7 @@ def make_parabolic_recipe(xobs, yobs):
 
     return recipe
 
+
 # ------------------------------------------------------
 # 15. Now we can create the parabolic recipe, optimize it,
 #     and plot the results.
@@ -235,6 +249,7 @@ main(parabolic_recipe)
 # 16. Finally, let's try to fit the data with a cubic function.
 #     The cubic function is our ground truth, so we expect
 #     this fit to be very good.
+
 
 def make_cubic_recipe(xobs, yobs):
     profile = Profile()
@@ -250,6 +265,7 @@ def make_cubic_recipe(xobs, yobs):
     for var in cubic_variables:
         recipe.addVar(getattr(recipe.cubic_fit, var), 1)
     return recipe
+
 
 # ------------------------------------------------------
 # 17. Now we can create the cubic recipe, optimize it,
