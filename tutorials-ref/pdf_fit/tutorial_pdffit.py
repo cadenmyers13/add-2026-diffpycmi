@@ -35,7 +35,9 @@ from diffpy.utils.parsers.loaddata import loadData
 # -------------------------------------------------------
 # First thing is to load in and plot the PDF as a sanity check.
 # We can get the path to the data using pathlib.Path
-gr_path = str(Path(__file__).parent / "data" / "SrFe2As2_150K.gr")
+path_to_data_dir = Path(__file__).parent / "pdf" / "ch07StructuralPhaseTransitions" / "data"
+cif_path = str(Path(path_to_data_dir) / "SrFe2As2_orthorhombic.cif")
+gr150_path = str(Path(path_to_data_dir) / "SrFe2As2_150K.gr")
 
 # -------------------------------------------------------
 # Like we did with the cubic fit example, we will first instatiate
@@ -45,7 +47,7 @@ gr_path = str(Path(__file__).parent / "data" / "SrFe2As2_150K.gr")
 profile = Profile()
 # parse the pdf
 pdf_parser = PDFParser()
-pdf_parser.parseFile(gr_path)
+pdf_parser.parseFile(gr150_path)
 # load pdf to profile object
 profile.loadParsedData(pdf_parser)
 
@@ -72,6 +74,7 @@ profile.setCalculationRange(xmin=rmin, xmax=rmax, dx=rstep)
 # Like last time, we will first instatiate the FitContribution and give it
 # a name.
 contribution = FitContribution("crystal_fit")
+contribution.setProfile(profile)
 
 # Last time, the models we were fitting were nth order equations.
 # This time, we are fitting a PDF based on a crystal structure.
@@ -108,7 +111,7 @@ model_pdf.setStructure(tetragonal_structure)
 
 # Using loadData from diffpy.utils.parsers.loaddata, we can
 # obtain these parameters from the header of the .gr file.
-metadata = loadData(gr_path, headers=True)
+metadata = loadData(gr150_path, headers=True)
 qmax = metadata["qmax"]
 qmin = metadata["qmin"]
 # Now we can set these parameters on the model PDF object
@@ -128,11 +131,10 @@ model_pdf.qbroad.value = qbroad
 # With the PDFGenerator object created, we can now add it to
 # the FitContribution object and link the profile to the contribution.
 contribution.addProfileGenerator(model_pdf)
-contribution.setProfile(profile)
 
 # To scale the generated PDF to the observed PDF, we need to add
 # a scale factor to the contribution in the form of an equation.
-contribution.setEquation("s1*G1")
+# contribution.setEquation("s1*G1")
 
 contribution.show()
 # -------------------------------------------------------
@@ -251,34 +253,13 @@ def refine_recipe(recipe):
         optimize_recipe(recipe)
 
 
-def plot_recipe_and_print_results(recipe, figsize=(8, 6)):
-    results = FitResults(recipe)
-    print(results)
-    rw = results.rw
-    for name, contrib in recipe._contributions.items():
-        profile = contrib.profile
-        xobs = profile.x
-        yobs = profile.y
-        ycalc = profile.ycalc
-        plt.figure(figsize=figsize)
-        plt.plot(xobs, yobs, "o")
-        plt.plot(xobs, ycalc, label=f"Rw={rw:.4f}")
-        diff = yobs - ycalc
-        offset = np.min(yobs) - 0.5
-        plt.plot(xobs, diff + offset, "-")
-        plt.hlines(offset, xmin=np.min(xobs), xmax=np.max(xobs), colors="k")
-        plt.title("PDF Fit Result")
-        plt.xlabel("r (A)")
-        plt.ylabel("G(r)")
-        plt.legend()
-        plt.show()
-
+from tutorial_pdffit import plot_recipe_and_print_results
 
 # Now we can use these functions to do the fit again
 
 
 def main():
-    recipe = make_recipe(gr_path, cif_path, 0, 30)
+    recipe = make_recipe(gr150_path, cif_path, 0, 30)
     refine_recipe(recipe)
     plot_recipe_and_print_results(recipe)
 

@@ -39,12 +39,9 @@ plt.plot(xobs, yobs, "o")
 plt.show()
 # ------------------------------------------------------
 # 3. As humans, we have inherent bias in how we might chose to go about
-#    fitting this data. Some of us may be biased to fit a line, others
-#    a parabola, and others a cubic. Because we created the data using
-#    a cubic function, we already are biased to see the underlying cubic
-#    curvature of the plot.
-#    Lets ignore our bias and use our scientific reason to find the function
-#    that best fits the model.
+#    fitting this data. We are pretty good at fitting curves.
+#    That being said, lets fit three different functions to this data.
+
 
 # First, lets try to fit the data with a linear function.
 # This is where we will first use objects from the diffpy.cmi world
@@ -128,11 +125,11 @@ recipe.show()
 residual = recipe.residual
 values = recipe.values
 leastsq(residual, values)
+fit_results = FitResults(recipe)
+print(fit_results)
 
 # ------------------------------------------------------
 # 9. Finally, we can obtain the results and plot them.
-fit_results = FitResults(recipe)
-print(fit_results)
 
 
 rw = fit_results.rw
@@ -182,21 +179,26 @@ from diffpy.cmi.fit_tools import optimize_recipe
 # 12. Now, let's create the function to plot the results.
 
 
-def plot_recipe_and_print_results(recipe, figsize=(8, 6)):
+def plot_recipe_and_print_results(recipe, figsize=(8, 6), offset_scale=1.0):
     results = FitResults(recipe)
     print(results)
     rw = results.rw
     for name, contrib in recipe._contributions.items():
         profile = contrib.profile
-        xobs = profile.xobs
-        yobs = profile.yobs
+        x = profile.x
+        yobs = profile.y
         ycalc = profile.ycalc
+        diff = yobs - ycalc
+        base_offset = min(yobs.min(), ycalc.min()) - 0.1 * (yobs.max() - yobs.min())
+        offset = base_offset * offset_scale
         plt.figure(figsize=figsize)
-        plt.plot(xobs, yobs, "o")
-        plt.plot(xobs, ycalc, label=f"Rw={rw:.4f}")
+        plt.plot(x, yobs, "o")
+        plt.plot(x, ycalc, label=f"Rw={rw:.4f}")
+        plt.plot(x, diff + offset)
+        plt.axhline(offset, color="black")
         plt.legend()
         plt.show()
-
+    return results
 
 # ------------------------------------------------------
 # 13. Finally we can wrap everything together in a final
@@ -273,3 +275,6 @@ def make_cubic_recipe(xobs, yobs):
 
 cubic_recipe = make_cubic_recipe(xobs, yobs)
 main(cubic_recipe)
+
+if __name__ == "__main__":
+    main()
