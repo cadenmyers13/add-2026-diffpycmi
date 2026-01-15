@@ -35,7 +35,9 @@ from diffpy.utils.parsers.loaddata import loadData
 # -------------------------------------------------------
 # First thing is to load in and plot the PDF as a sanity check.
 # We can get the path to the data using pathlib.Path
-path_to_data_dir = Path(__file__).parent / "pdf" / "ch07StructuralPhaseTransitions" / "data"
+path_to_data_dir = (
+    Path(__file__).parent / "pdf" / "ch07StructuralPhaseTransitions" / "data"
+)
 cif_path = str(Path(path_to_data_dir) / "SrFe2As2_orthorhombic.cif")
 gr150_path = str(Path(path_to_data_dir) / "SrFe2As2_150K.gr")
 
@@ -134,7 +136,7 @@ contribution.addProfileGenerator(model_pdf)
 
 # To scale the generated PDF to the observed PDF, we need to add
 # a scale factor to the contribution in the form of an equation.
-# contribution.setEquation("s1*G1")
+contribution.setEquation("s1*G1")
 
 contribution.show()
 # -------------------------------------------------------
@@ -144,7 +146,6 @@ recipe = FitRecipe()
 recipe.addContribution(contribution)
 
 # now, we can start adding these parameters as variables to the recipe
-recipe.addVar(contribution.s1, 1.0, tag="scale")
 
 sg_parameters = constrainAsSpaceGroup(model_pdf.phase, spacegroup)
 
@@ -156,6 +157,7 @@ for pos_param in sg_parameters.xyzpars:
     recipe.addVar(pos_param, tag="atomic_positions")
 
 recipe.addVar(model_pdf.delta2, 1.5, tag="delta2")
+recipe.addVar(contribution.s1, 1.0, tag="scale")
 
 recipe.show()
 

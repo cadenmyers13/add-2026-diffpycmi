@@ -189,7 +189,9 @@ def plot_recipe_and_print_results(recipe, figsize=(8, 6), offset_scale=1.0):
         yobs = profile.y
         ycalc = profile.ycalc
         diff = yobs - ycalc
-        base_offset = min(yobs.min(), ycalc.min()) - 0.1 * (yobs.max() - yobs.min())
+        base_offset = min(yobs.min(), ycalc.min()) - 0.1 * (
+            yobs.max() - yobs.min()
+        )
         offset = base_offset * offset_scale
         plt.figure(figsize=figsize)
         plt.plot(x, yobs, "o")
@@ -199,6 +201,7 @@ def plot_recipe_and_print_results(recipe, figsize=(8, 6), offset_scale=1.0):
         plt.legend()
         plt.show()
     return results
+
 
 # ------------------------------------------------------
 # 13. Finally we can wrap everything together in a final
