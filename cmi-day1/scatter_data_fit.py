@@ -4,21 +4,23 @@ from diffpy.srfit.fitbase import (
     Profile,
     FitContribution,
     FitRecipe,
-    FitResults
+    FitResults,
 )
 from scipy.optimize import leastsq
 from bg_mpl_stylesheets.styles import all_styles
 
 plt.style.use(all_styles["bg-style"])
 
+
 def generate_synthetic_data(x, a, b, c, d):
-    y = a*x**3 + b*x**2 + c*x + d
-    noise = np.random.normal(0,1, size=y.shape) * .8
+    y = a * x**3 + b * x**2 + c * x + d
+    noise = np.random.normal(0, 1, size=y.shape) * 0.8
     y_observed = y + noise
     return y_observed
 
+
 x = np.linspace(0, 21.5, 100)
-yobs = generate_synthetic_data(x, -.0015, .04, .14, .5)
+yobs = generate_synthetic_data(x, -0.0015, 0.04, 0.14, 0.5)
 
 # 1
 scatter = Profile()
@@ -42,6 +44,7 @@ residual = linear_recipe.residual
 values = linear_recipe.values
 leastsq(residual, values)
 fit_results = FitResults(linear_recipe)
+
 
 def make_linear_recipe(x, yobs):
 
@@ -70,6 +73,7 @@ def plot_fit(linear_recipe, fit_results):
     plt.show()
     return
 
+
 def refine_recipe(recipe):
     residual = recipe.residual
     values = recipe.values
@@ -77,8 +81,9 @@ def refine_recipe(recipe):
     fit_results = FitResults(recipe)
     return fit_results
 
+
 def plot_recipe(recipe, figsize=(8, 6), offset_scale=1.0):
-    results = FitResults (recipe)
+    results = FitResults(recipe)
     rw = results.rw
     for name, contrib in recipe._contributions.items():
         profile = contrib.profile
@@ -86,7 +91,9 @@ def plot_recipe(recipe, figsize=(8, 6), offset_scale=1.0):
         yobs = profile.y
         ycalc = profile.ycalc
         diff = yobs - ycalc
-        base_offset = min(yobs.min(), ycalc.min()) - 0.1 * (yobs.max() - yobs.min())
+        base_offset = min(yobs.min(), ycalc.min()) - 0.1 * (
+            yobs.max() - yobs.min()
+        )
         offset = base_offset * offset_scale
         plt.figure(figsize=figsize)
         plt.plot(x, yobs, "o")
@@ -97,11 +104,13 @@ def plot_recipe(recipe, figsize=(8, 6), offset_scale=1.0):
         plt.show()
     return results
 
+
 def main():
     recipe = make_linear_recipe(x, yobs)
     fit_results = refine_recipe(recipe)
     plot_recipe(recipe)
     return
+
 
 if __name__ == "__main__":
     main()

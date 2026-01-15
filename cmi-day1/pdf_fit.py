@@ -17,9 +17,12 @@ from diffpy.utils.parsers.loaddata import loadData
 
 from pathlib import Path
 
-path_to_data_dir = Path(__file__).parent / "pdf" / "ch07StructuralPhaseTransitions" / "data"
+path_to_data_dir = (
+    Path(__file__).parent / "pdf" / "ch07StructuralPhaseTransitions" / "data"
+)
 gr150_path = str(path_to_data_dir / "SrFe2As2_150K.gr")
 cif_path = str(path_to_data_dir / "SrFe2As2_orthorhombic.cif")
+
 
 def make_pdf_recipe(gr_path, cif_path):
     # 1
@@ -31,8 +34,8 @@ def make_pdf_recipe(gr_path, cif_path):
     g = profile.y
     r = profile.x
 
-    profile.setCalculationRange(xmin=.5, xmax=20, dx=.05)
-    
+    profile.setCalculationRange(xmin=0.5, xmax=20, dx=0.05)
+
     # 2
     pdf_contribution = FitContribution("crystal_fit")
     pdf_contribution.setProfile(profile)
@@ -46,8 +49,8 @@ def make_pdf_recipe(gr_path, cif_path):
     model_pdf.setStructure(ortho_structure)
 
     metadata = loadData(gr_path, headers=True)
-    qmax = metadata.get('qmax')
-    qmin = metadata.get('qmin')
+    qmax = metadata.get("qmax")
+    qmin = metadata.get("qmin")
     model_pdf.setQmax(qmax)
     model_pdf.setQmin(qmin)
 
@@ -76,20 +79,31 @@ def make_pdf_recipe(gr_path, cif_path):
 
     return pdf_recipe
 
+
 from scatter_data_fit import refine_recipe, plot_recipe
+
 
 def run_staged_refinement(recipe):
     recipe.fix("all")
-    tags = ["lattice_params", "scale", "adps", "atomic_coordinates", "delta2", "all"]
+    tags = [
+        "lattice_params",
+        "scale",
+        "adps",
+        "atomic_coordinates",
+        "delta2",
+        "all",
+    ]
     for tag in tags:
         recipe.free(tag)
         refine_recipe(recipe)
+
 
 def main():
     recipe = make_pdf_recipe(gr150_path, cif_path)
     run_staged_refinement(recipe)
     plot_recipe(recipe)
     return
+
 
 if __name__ == "__main__":
     main()
